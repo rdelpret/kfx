@@ -1,0 +1,61 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import signalfx
+import json
+from kubernetes import client, config
+import math
+import os
+import configparser
+import sys
+
+class sflow:
+    node_memory_usage_total = """(data('container_memory_usage_bytes').sum(by='host') / 
+                                  data('machine_memory_bytes')).publish()"""  
+
+command_tree = {"get" : { "nodes" : {"memory" : { "sflow" : sflow.node_memory_usage_total}}}}
+
+
+def parse_commands(command, commands):
+   if commands and  commands.get("sflow"):
+       return commands.get('sflow')
+   elif command == []:
+       return "Kick Rocks"
+   else:
+       commands = commands.get(command[0])
+       command = command[1:]
+       return parse_commands(command, commands)
+
+def all_clusters(token, sflow):
+    with signalfx.SignalFx().signalflow(token) as flow:
+        computation = flow.execute(sflow)
+        for msg in computation.stream():
+            if isinstance(msg, signalfx.signalflow.messages.DataMessage):
+                    os.system('clear')
+                    clusters = {}
+                    for tsid, value in msg.data.items():
+                        metadata = computation.get_metadata(tsid)
+                        used = int(value * 100)
+                        free = int(100 - used)
+                        usedvisual = u"▇" * int(used)
+                        node =  u'%-31s %s %s%%' % (metadata['host'], usedvisual, used)
+                        if metadata['kubernetes_cluster'] in clusters:
+                            clusters[metadata['kubernetes_cluster']].append(node)
+                        else:
+                            clusters[metadata['kubernetes_cluster']] = [node,]
+                    for i in clusters:
+                         print i
+                         print "-----------------"
+                         for x in clusters[i]:
+                             print x
+                         print
+
+def main():
+     kfxconfig = configparser.ConfigParser()
+     kfxconfig.read(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'kfx.config'))
+     token  = kfxconfig['signalfx'].get('token')
+     command = sys.argv[1:] 
+     sflow = parse_commands(command, command_tree)
+     all_clusters(token, sflow)
+if __name__ == "__main__":
+    main() 
