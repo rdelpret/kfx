@@ -13,5 +13,5 @@ remove the `.example` at the end of the `kfx.config.example` and add your signal
 
 `$ kfx get nodes memory`
 
-![image memory]('kfx/memory.png')
+![image memory](kfx/memory.png)
       
