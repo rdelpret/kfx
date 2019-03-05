@@ -9,7 +9,7 @@ Make an alias in your bash_profile for kfx
 
 remove the `.example` at the end of the `kfx.config.example` and add your signalfx user token
 
-## supported commands
+## Supported Commands
 
 `$ kfx get nodes memory`
 
