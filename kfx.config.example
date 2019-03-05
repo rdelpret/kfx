@@ -1,0 +1,5 @@
+#Save this file as kfx.config in the same directory as kfx
+# token is the only config option at this time
+
+[signalfx]
+token = 
