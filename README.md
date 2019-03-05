@@ -11,4 +11,4 @@ remove the `.example` at the end of the `kfx.config.example` and add your signal
 
 ## supported commands
 
-`kfx get nodes memory`
+`$ kfx get nodes memory`
