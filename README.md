@@ -12,5 +12,6 @@ remove the `.example` at the end of the `kfx.config.example` and add your signal
 ## supported commands
 
 `$ kfx get nodes memory`
-![image kfx node memory]('kfx/kfx node memory.png')
+
+![image memory]('kfx/memory.png')
       
