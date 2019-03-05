@@ -20,7 +20,8 @@ def parse_commands(command, commands):
    if commands and  commands.get("sflow"):
        return commands.get('sflow')
    elif command == []:
-       return "Kick Rocks"
+       print "Kick Rocks!"
+       exit()
    else:
        commands = commands.get(command[0])
        command = command[1:]
