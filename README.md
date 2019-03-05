@@ -1,6 +1,6 @@
 # kfx
 
-## To use
+## To Use
 `git clone https://github.com/rdelpret/kfx.git`
 
 Make an alias in your bash_profile for kfx
@@ -9,9 +9,9 @@ Make an alias in your bash_profile for kfx
 
 remove the `.example` at the end of the `kfx.config.example` and add your signalfx user token
 
-## supported commands
+## Supported Commands
 
 `$ kfx get nodes memory`
 
-![image memory](memory.png)
+![image memory](screenshots/memory.png)
       
