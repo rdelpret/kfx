@@ -1,6 +1,6 @@
 # kfx
 
-## To use
+## To Use
 `git clone https://github.com/rdelpret/kfx.git`
 
 Make an alias in your bash_profile for kfx
