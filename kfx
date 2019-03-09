@@ -5,20 +5,21 @@ import signalfx
 import json
 from kubernetes import client, config
 import math
+import yaml
 import os
 import configparser
 import sys
 
-class sflow:
-    node_memory_usage_total = """(data('container_memory_usage_bytes').sum(by='host') / 
-                                  data('machine_memory_bytes')).publish()"""  
 
-command_tree = {"get" : { "nodes" : {"memory" : { "sflow" : sflow.node_memory_usage_total}}}}
+def load_yaml():
+    with open("kfx.yaml", 'r') as file:
+        command_tree = yaml.load(file)
+        return command_tree
 
 
 def parse_commands(command, commands):
-   if commands and  commands.get("sflow"):
-       return commands.get('sflow')
+   if commands and  commands.get("signalFlow"):
+       return commands.get('signalFlow'), commands.get('metric')
    elif command == []:
        print "Kick Rocks!"
        exit()
@@ -27,17 +28,20 @@ def parse_commands(command, commands):
        command = command[1:]
        return parse_commands(command, commands)
 
-def all_clusters(token, sflow):
+
+def all_clusters(token, sflow, metric_name):
     with signalfx.SignalFx().signalflow(token) as flow:
         computation = flow.execute(sflow)
         for msg in computation.stream():
             if isinstance(msg, signalfx.signalflow.messages.DataMessage):
                     os.system('clear')
+                    print
+                    print (" " * 40) + metric_name
+                    print
                     clusters = {}
                     for tsid, value in msg.data.items():
                         metadata = computation.get_metadata(tsid)
-                        used = int(value * 100)
-                        free = int(100 - used)
+                        used = int(value)
                         usedvisual = u"▇" * int(used)
                         node =  u'%-31s %s %s%%' % (metadata['host'], usedvisual, used)
                         if metadata['kubernetes_cluster'] in clusters:
@@ -51,12 +55,21 @@ def all_clusters(token, sflow):
                              print x
                          print
 
+
 def main():
-     kfxconfig = configparser.ConfigParser()
-     kfxconfig.read(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'kfx.config'))
-     token  = kfxconfig['signalfx'].get('token')
-     command = sys.argv[1:] 
-     sflow = parse_commands(command, command_tree)
-     all_clusters(token, sflow)
+
+    try:
+        command_tree = load_yaml()
+        kfxconfig = configparser.ConfigParser()
+        kfxconfig.read(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'kfx.config'))
+        token  = kfxconfig['signalfx'].get('token')
+        command = sys.argv[1:] 
+        sflow, metric_name = parse_commands(command, command_tree)
+        all_clusters(token, sflow, metric_name)
+    except KeyboardInterrupt: # allows ctrl-c to exit gracefully without a stacktrace
+        print
+        exit(0)
+
+
 if __name__ == "__main__":
     main() 
