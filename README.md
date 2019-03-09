@@ -11,7 +11,8 @@ remove the `.example` at the end of the `kfx.config.example` and add your signal
 
 ## Supported Commands
 
-`$ kfx get nodes memory`
+`$ kfx get node memory`
+`$ kfx get node cpu`
 
 ![image memory](screenshots/memory.png)
       
