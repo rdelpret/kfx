@@ -1,0 +1,8 @@
+get:
+  node:
+    memory:
+      metric: "Memory Usage"
+      signalFlow: "((data('container_memory_usage_bytes').sum(by='host') / data('machine_memory_bytes')) * 100).publish()"
+    cpu:
+      metric: "CPU Usage"
+      signalFlow: "data('cpu.utilization').publish()"
