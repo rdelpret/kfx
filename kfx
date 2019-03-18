@@ -12,7 +12,9 @@ import sys
 
 
 def load_yaml():
-    with open("kfx.yaml", 'r') as file:
+    dirname = os.path.dirname(__file__)
+    filename = os.path.join(dirname, 'kfx.yaml')
+    with open(filename, 'r') as file:
         command_tree = yaml.load(file)
         return command_tree
 
